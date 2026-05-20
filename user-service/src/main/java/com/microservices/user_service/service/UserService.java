@@ -6,10 +6,14 @@ import com.microservices.user_service.payload.UserDTO;
 import com.microservices.user_service.payload.UserRequestDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseCookie;
 
 public interface UserService {
     UserDTO register(@Valid UserRequestDTO userRequestDto);
 
-    CustomResponse login(@Valid LoginRequestDTO loginRequestDto);
+    ResponseCookie login(@Valid LoginRequestDTO loginRequestDto);
+
+    ResponseCookie logout();
 }
+
 

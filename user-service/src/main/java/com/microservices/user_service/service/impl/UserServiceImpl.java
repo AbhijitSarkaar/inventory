@@ -1,7 +1,6 @@
 package com.microservices.user_service.service.impl;
 
 import com.microservices.user_service.enums.AppRole;
-import com.microservices.user_service.exceptions.CustomResponse;
 import com.microservices.user_service.model.Role;
 import com.microservices.user_service.model.User;
 import com.microservices.user_service.payload.LoginRequestDTO;
@@ -9,10 +8,13 @@ import com.microservices.user_service.payload.UserDTO;
 import com.microservices.user_service.payload.UserRequestDTO;
 import com.microservices.user_service.repository.RoleRepository;
 import com.microservices.user_service.repository.UserRepository;
+import com.microservices.user_service.security.service.impl.UserDetailsImpl;
+import com.microservices.user_service.security.utils.JwtUtils;
 import com.microservices.user_service.service.UserService;
 import com.microservices.user_service.util.DTOBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,6 +42,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     AuthenticationManager authenticationManager;
+
+    @Autowired
+    JwtUtils jwtUtils;
 
     @Override
     public UserDTO register(UserRequestDTO userRequestDto) {
@@ -80,7 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CustomResponse login(LoginRequestDTO loginRequestDto) {
+    public ResponseCookie login(LoginRequestDTO loginRequestDto) {
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(
@@ -93,6 +98,13 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Bad credentials");
         }
 
-        return new CustomResponse("logged in");
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        return jwtUtils.getJwtCookie(userDetails.getUsername());
+    }
+
+    @Override
+    public ResponseCookie logout() {
+        return jwtUtils.cleanCookie();
     }
 }

@@ -6,8 +6,11 @@ import com.microservices.user_service.payload.UserDTO;
 import com.microservices.user_service.payload.UserRequestDTO;
 import com.microservices.user_service.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
+@Slf4j
 public class UserController {
 
     @Autowired
@@ -37,12 +41,19 @@ public class UserController {
     public ResponseEntity<CustomResponse> login(
             @Valid @RequestBody LoginRequestDTO loginRequestDto
             ) {
-        return new ResponseEntity<>(
-                userService.login(loginRequestDto),
-                HttpStatus.OK
+        ResponseCookie cookie = userService.login(loginRequestDto);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(
+                new CustomResponse("logged in")
         );
     }
 
     //logout
-
+    @PostMapping("/users/logout")
+    public ResponseEntity<CustomResponse> logout() {
+        log.info("::logout()::");
+        ResponseCookie cookie = userService.logout();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(
+                new CustomResponse("logged out")
+        );
+    }
 }
