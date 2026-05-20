@@ -35,4 +35,10 @@ public class Product {
     @Column(precision = 10, scale = 2, name = "price")
     private BigDecimal price;
 
+    public Product(String productName, String productDescription, String productSku, BigDecimal price) {
+        this.productName = productName;
+        this.productDescription = productDescription;
+        this.productSku = productSku;
+        this.price = price;
+    }
 }

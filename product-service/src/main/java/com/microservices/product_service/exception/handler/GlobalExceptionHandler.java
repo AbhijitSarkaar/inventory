@@ -1,5 +1,7 @@
-package com.microservices.product_service.exception;
+package com.microservices.product_service.exception.handler;
 
+import com.microservices.product_service.exception.response.CustomResponse;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,5 +21,13 @@ public class GlobalExceptionHandler {
             map.put(err.getField(), err.getDefaultMessage());
         });
         return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<CustomResponse> customRuntimeExceptionHandler(RuntimeException e) {
+        return new ResponseEntity<>(
+                new CustomResponse(e.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 }

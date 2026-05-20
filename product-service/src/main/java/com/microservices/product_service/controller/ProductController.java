@@ -1,6 +1,7 @@
 
 package com.microservices.product_service.controller;
 
+import com.microservices.product_service.exception.response.CustomResponse;
 import com.microservices.product_service.payload.ProductDTO;
 import com.microservices.product_service.payload.ProductRequestDTO;
 import com.microservices.product_service.service.ProductService;
@@ -39,15 +40,35 @@ public class ProductController {
         );
     }
 
-//    @GetMapping("/products/{productId}")
-//    public ResponseEntity<ProductDTO> details(
-//            @PathVariable("productId") String productId
-//    ) {
-//
-//    }
+    @GetMapping("/products/{productId}")
+    public ResponseEntity<ProductDTO> details(
+            @PathVariable("productId") Long productId
+    ) {
+        return new ResponseEntity<>(
+                productService.getProductById(productId),
+                HttpStatus.OK
+        );
+    }
 
-//    @PutMapping("/products/{productId}")
-//    @DeleteMapping("/products/{productId}")
+    @PutMapping("/products/{productId}")
+    public ResponseEntity<ProductDTO> update(
+            @PathVariable("productId") Long productId,
+            @Valid @RequestBody ProductRequestDTO productRequestDto
+    ) {
+        return new ResponseEntity<>(
+                productService.updateProduct(productId, productRequestDto),
+                HttpStatus.OK
+        );
+    }
 
+    @DeleteMapping("/products/{productId}")
+    public ResponseEntity<CustomResponse> delete(
+            @PathVariable("productId") Long productId
+    ) {
+        return new ResponseEntity<>(
+                productService.deleteProduct(productId),
+                HttpStatus.OK
+        );
+    }
 
 }

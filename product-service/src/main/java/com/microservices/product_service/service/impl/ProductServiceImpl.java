@@ -1,5 +1,7 @@
 package com.microservices.product_service.service.impl;
 
+import com.microservices.product_service.exception.exceptions.ResourceNotFoundException;
+import com.microservices.product_service.exception.response.CustomResponse;
 import com.microservices.product_service.model.Product;
 import com.microservices.product_service.payload.ProductDTO;
 import com.microservices.product_service.payload.ProductRequestDTO;
@@ -7,7 +9,6 @@ import com.microservices.product_service.repository.ProductRepository;
 import com.microservices.product_service.service.ProductService;
 import com.microservices.product_service.util.DTOBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,6 +41,40 @@ public class ProductServiceImpl implements ProductService {
 
         product = productRepository.save(product);
         return dtoBuilder.productDtoBuilder(product);
+    }
 
+    @Override
+    public ProductDTO getProductById(Long productId) {
+        Product product = getById(productId);
+        return dtoBuilder.productDtoBuilder(product);
+    }
+
+    @Override
+    public ProductDTO updateProduct(Long productId, ProductRequestDTO productRequestDto) {
+        Product product = getById(productId);
+
+        product.setProductName(productRequestDto.getProductName());
+        product.setProductDescription(productRequestDto.getProductDescription());
+        product.setProductSku(productRequestDto.getProductSku());
+        product.setPrice(productRequestDto.getPrice());
+        product.setProductId(productId);
+
+        product = productRepository.save(product);
+
+        return dtoBuilder.productDtoBuilder(product);
+    }
+
+    @Override
+    public CustomResponse deleteProduct(Long productId) {
+        getById(productId);
+        productRepository.deleteById(productId);
+        return new CustomResponse("Product with " + productId + " deleted");
+    }
+
+    Product getById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Product", "productId", productId.toString())
+                );
     }
 }
