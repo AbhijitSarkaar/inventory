@@ -12,17 +12,23 @@ import com.microservices.user_service.security.service.impl.UserDetailsImpl;
 import com.microservices.user_service.security.utils.JwtUtils;
 import com.microservices.user_service.service.UserService;
 import com.microservices.user_service.util.DTOBuilder;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.WebUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -45,6 +51,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Value("${jwtCookie}")
+    private String jwtCookie;
 
     @Override
     public UserDTO register(UserRequestDTO userRequestDto) {
@@ -106,5 +115,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseCookie logout() {
         return jwtUtils.cleanCookie();
+    }
+
+    @Override
+    public ResponseEntity<?> details(HttpServletRequest httpServletRequest) {
+        Cookie cookie = WebUtils.getCookie(httpServletRequest, jwtCookie);
+        String username = jwtUtils.getUsernameFromJwt(cookie.getValue());
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+        String roles = user.getRoles().stream().map(role -> role.getRoleName().name())
+                .collect(Collectors.joining(":"));
+
+        return ResponseEntity.ok()
+                .header("X-USER-ID", user.getUserId().toString())
+                .header("X-USER-ROLE", roles)
+                .body(null);
     }
 }
