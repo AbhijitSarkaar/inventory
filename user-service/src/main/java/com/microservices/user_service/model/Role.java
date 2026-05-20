@@ -15,10 +15,13 @@ import lombok.NoArgsConstructor;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer role_id;
+    private Integer roleId;
 
-    @ManyToMany
     @NotNull
     @Enumerated(EnumType.STRING)
-    private AppRole role_name;
+    private AppRole roleName;
+
+    public Role(AppRole role) {
+        this.roleName = role;
+    }
 }

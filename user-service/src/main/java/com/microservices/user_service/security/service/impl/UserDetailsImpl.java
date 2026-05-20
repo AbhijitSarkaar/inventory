@@ -51,7 +51,7 @@ public class UserDetailsImpl implements UserDetails {
                 .toList();
 
         return new UserDetailsImpl(
-                user.getUsername(),
+                user.getPassword(),
                 user.getPassword(),
                 user.getEmail(),
                 authorities1

@@ -1,9 +1,11 @@
 
 package com.microservices.user_service.security;
 
+import com.microservices.user_service.security.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -19,7 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Autowired
-    UserDetailsService userDetailsService;
+    UserDetailsServiceImpl userDetailsService;
 
     @Bean
     DaoAuthenticationProvider authenticationProvider() {
@@ -40,9 +42,14 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) {
-        http.authorizeHttpRequests(auth ->
-                auth.anyRequest().authenticated());
-
+        http
+                .authorizeHttpRequests(auth ->
+                        auth.requestMatchers("/api/users/*").permitAll()
+                        .anyRequest()
+                        .authenticated()
+                );
+        http.csrf(csrf -> csrf.disable());
+        http.authenticationProvider(authenticationProvider());
         return http.build();
     }
 }

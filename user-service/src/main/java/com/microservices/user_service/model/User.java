@@ -19,19 +19,23 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
 
     @NotNull
     @Size(min = 2, message = "username needs to be at least 2 characters")
+    @Column(name = "username")
     private String username;
 
     @NotNull
     @Size(min = 3, message = "password needs to be at least 3 characters")
+    @Column(name = "password")
     private String password;
 
     @NotNull
     @Email
     @Size(min = 5, message = "email needs to be at least 5 characters")
+    @Column(name = "email")
     private String email;
 
     @ManyToMany
