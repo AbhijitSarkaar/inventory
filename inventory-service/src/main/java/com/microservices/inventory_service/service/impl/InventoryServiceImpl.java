@@ -5,9 +5,11 @@ import com.microservices.inventory_service.model.Sku;
 import com.microservices.inventory_service.payload.SkuRequestDTO;
 import com.microservices.inventory_service.repository.InventoryRepository;
 import com.microservices.inventory_service.service.InventoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class InventoryServiceImpl implements InventoryService {
 
@@ -33,12 +35,8 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public CustomResponse reduceStock(String skuId, SkuRequestDTO skuRequestDto) {
-        Sku sku = getById(skuId);
-        Integer quantity = skuRequestDto.getQuantity();
-        if(sku.getQuantity() < quantity) {
-            throw new RuntimeException("Product stock unavailable");
-        }
+    public CustomResponse reduceStock(String skuId, Integer quantity) {
+        Sku sku = checkAvailability(skuId, quantity);
         sku.setQuantity(sku.getQuantity() - quantity);
         inventoryRepository.save(sku);
         return new CustomResponse("Updated");
@@ -57,6 +55,14 @@ public class InventoryServiceImpl implements InventoryService {
     Sku getById(String skuId) {
         return inventoryRepository.findById(skuId)
                 .orElseThrow(() -> new RuntimeException("Sku with " + skuId + " not found"));
+    }
+
+    public Sku checkAvailability(String skuId, Integer quantity) {
+        Sku sku = getById(skuId);
+        if(sku.getQuantity() < quantity) {
+            throw new RuntimeException("Product stock unavailable");
+        }
+        return sku;
     }
 
 }

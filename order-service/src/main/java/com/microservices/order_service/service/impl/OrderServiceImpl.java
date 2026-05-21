@@ -1,8 +1,10 @@
 
 package com.microservices.order_service.service.impl;
 
+import com.microservices.order_service.client.InventoryClient;
 import com.microservices.order_service.client.ProductClient;
 import com.microservices.order_service.external.Product;
+import com.microservices.order_service.external.Sku;
 import com.microservices.order_service.model.Order;
 import com.microservices.order_service.model.OrderItem;
 import com.microservices.order_service.payload.OrderDTO;
@@ -19,8 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -38,6 +39,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     DTOBuilder dtoBuilder;
 
+    @Autowired
+    InventoryClient inventoryClient;
+
     @Transactional
     @Override
     public OrderDTO createOrder(OrderRequestDTO orderRequestDto) {
@@ -47,9 +51,17 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal totalPrice = new BigDecimal("0.00");
         List<OrderItemDTO> orderItemDtos= orderRequestDto.getOrderItems();
         List<OrderItem> orderItems = new ArrayList<>();
+        Map<String, Integer> map = new HashMap<>();
 
         for(OrderItemDTO item: orderItemDtos) {
             Product product = productClient.details(item.getProductId());
+            Sku sku = inventoryClient.availability(product.getProductSku(), item.getQuantity());
+            if(sku.getSkuId() == null) {
+                throw new RuntimeException("Product with id " + product.getProductId() + " unavailable");
+            } else {
+                map.put(product.getProductSku(), item.getQuantity());
+            }
+
             BigDecimal num = product.getPrice().multiply(
                     new BigDecimal(item.getQuantity())
             );
@@ -64,15 +76,25 @@ public class OrderServiceImpl implements OrderService {
 
         order.setTotalPrice(totalPrice);
         order.setUpdatedAt(LocalDateTime.now());
-        order.setUserId(1L);
-        order = orderRepository.save(order);
 
+        // to be updated
+        order.setUserId(1L);
+
+        order = orderRepository.save(order);
         for(OrderItem orderItem: orderItems) {
             orderItem.setOrder(order);
         }
         orderItemRepository.saveAll(orderItems);
+        order.setOrderItems(orderItems);
+        OrderDTO responseDto = dtoBuilder.orderDtoBuilder(order);
 
-        return dtoBuilder.orderDtoBuilder(order);
+        // reduce inventory stock of ordered items
+        Set<String> keys = map.keySet();
+        for(String key: keys) {
+            inventoryClient.reduce(key, map.get(key));
+        }
+
+        return responseDto;
     }
 }
 

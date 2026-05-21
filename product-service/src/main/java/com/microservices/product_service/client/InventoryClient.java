@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
         url = "${inventory.service.url}"
 )
 public interface InventoryClient {
-    @GetMapping("/api/inventory/{skuId}")
+    @GetMapping("/api/inventories/{skuId}")
     public Boolean find(@PathVariable("skuId") String skuId);
 }
 

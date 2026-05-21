@@ -1,6 +1,7 @@
 package com.microservices.inventory_service.controller;
 
 import com.microservices.inventory_service.exception.response.CustomResponse;
+import com.microservices.inventory_service.model.Sku;
 import com.microservices.inventory_service.payload.SkuRequestDTO;
 import com.microservices.inventory_service.service.InventoryService;
 import jakarta.validation.Valid;
@@ -29,10 +30,10 @@ public class InventoryController {
     @PutMapping("/inventories/{skuId}")
     public ResponseEntity<CustomResponse> reduce(
             @PathVariable("skuId") String skuId,
-            @Valid @RequestBody SkuRequestDTO skuRequestDto
+            @RequestParam Integer quantity
     ) {
         return new ResponseEntity<>(
-                inventoryService.reduceStock(skuId, skuRequestDto),
+                inventoryService.reduceStock(skuId, quantity),
                 HttpStatus.OK
         );
     }
@@ -47,6 +48,19 @@ public class InventoryController {
 
         );
     }
+
+    @GetMapping("/inventories/availability/{skuId}")
+    public ResponseEntity<?> availability(
+            @PathVariable("skuId") String skuId,
+            @RequestParam Integer quantity
+    ) {
+        return new ResponseEntity<Sku>(
+                inventoryService.checkAvailability(skuId, quantity),
+                HttpStatus.OK
+        );
+    }
+
+
 }
 
 

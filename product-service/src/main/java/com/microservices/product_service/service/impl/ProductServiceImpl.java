@@ -9,11 +9,13 @@ import com.microservices.product_service.payload.ProductRequestDTO;
 import com.microservices.product_service.repository.ProductRepository;
 import com.microservices.product_service.service.ProductService;
 import com.microservices.product_service.util.DTOBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class ProductServiceImpl implements ProductService {
 
@@ -36,11 +38,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO createProduct(ProductRequestDTO productRequestDto) {
-        try {
-            inventoryClient.find(productRequestDto.getProductSku());
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Invalid Sku provided");
-        }
+        Boolean validSku = inventoryClient.find(productRequestDto.getProductSku());
+        if(!validSku) throw new RuntimeException("Invalid Sku provided");
 
         Product product = new Product();
 
