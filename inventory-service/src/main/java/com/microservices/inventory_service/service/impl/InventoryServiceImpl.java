@@ -1,0 +1,62 @@
+package com.microservices.inventory_service.service.impl;
+
+import com.microservices.inventory_service.exception.response.CustomResponse;
+import com.microservices.inventory_service.model.Sku;
+import com.microservices.inventory_service.payload.SkuRequestDTO;
+import com.microservices.inventory_service.repository.InventoryRepository;
+import com.microservices.inventory_service.service.InventoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class InventoryServiceImpl implements InventoryService {
+
+    @Autowired
+    InventoryRepository inventoryRepository;
+
+    @Override
+    public CustomResponse addStock(SkuRequestDTO skuRequestDto) {
+        Sku sku = new Sku();
+
+        try {
+            sku = getById(skuRequestDto.getSkuId());
+        } catch (RuntimeException e) {
+            sku.setQuantity(0);
+        }
+
+        sku.setSkuId(skuRequestDto.getSkuId());
+        sku.setQuantity(sku.getQuantity() + skuRequestDto.getQuantity());
+
+        inventoryRepository.save(sku);
+
+        return new CustomResponse("Sku updated");
+    }
+
+    @Override
+    public CustomResponse reduceStock(String skuId, SkuRequestDTO skuRequestDto) {
+        Sku sku = getById(skuId);
+        Integer quantity = skuRequestDto.getQuantity();
+        if(sku.getQuantity() < quantity) {
+            throw new RuntimeException("Product stock unavailable");
+        }
+        sku.setQuantity(sku.getQuantity() - quantity);
+        inventoryRepository.save(sku);
+        return new CustomResponse("Updated");
+    }
+
+    @Override
+    public Boolean find(String skuId) {
+        try {
+            getById(skuId);
+            return true;
+        } catch (RuntimeException e) {}
+
+        return false;
+    }
+
+    Sku getById(String skuId) {
+        return inventoryRepository.findById(skuId)
+                .orElseThrow(() -> new RuntimeException("Sku with " + skuId + " not found"));
+    }
+
+}
