@@ -3,6 +3,7 @@ package com.microservices.order_service.controller;
 import com.microservices.order_service.payload.OrderDTO;
 import com.microservices.order_service.payload.OrderRequestDTO;
 import com.microservices.order_service.service.OrderService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,10 +21,11 @@ public class OrderController {
 
     @PostMapping("/orders")
     public ResponseEntity<OrderDTO> create(
-            @Valid @RequestBody OrderRequestDTO orderRequestDto
+            @Valid @RequestBody OrderRequestDTO orderRequestDto,
+            HttpServletRequest httpServletRequest
     ) {
         return new ResponseEntity<>(
-                orderService.createOrder(orderRequestDto),
+                orderService.createOrder(orderRequestDto, httpServletRequest),
                 HttpStatus.CREATED
         );
     }

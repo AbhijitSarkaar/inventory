@@ -14,6 +14,7 @@ import com.microservices.order_service.repository.OrderItemRepository;
 import com.microservices.order_service.repository.OrderRepository;
 import com.microservices.order_service.service.OrderService;
 import com.microservices.order_service.util.DTOBuilder;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public OrderDTO createOrder(OrderRequestDTO orderRequestDto) {
+    public OrderDTO createOrder(OrderRequestDTO orderRequestDto, HttpServletRequest request) {
+
+        String userId = request.getHeader("X-USER-ID");
+        if(userId == null) {
+            throw new RuntimeException("Invalid credentials");
+        }
 
         Order order = new Order();
 
@@ -80,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUpdatedAt(LocalDateTime.now());
 
         // to be updated
-        order.setUserId(1L);
+        order.setUserId(Long.valueOf(userId));
 
         order = orderRepository.save(order);
         for(OrderItem orderItem: orderItems) {

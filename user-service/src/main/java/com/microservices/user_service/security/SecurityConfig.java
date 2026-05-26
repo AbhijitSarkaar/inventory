@@ -44,7 +44,9 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) {
         http
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/users/*").permitAll()
+                        auth.requestMatchers(
+                                "/api/users/*",
+                                        "/api/auth/*").permitAll()
                         .anyRequest()
                         .authenticated()
                 );
