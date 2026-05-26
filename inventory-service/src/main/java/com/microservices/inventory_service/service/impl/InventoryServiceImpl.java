@@ -43,13 +43,13 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Boolean find(String skuId) {
+    public Sku find(String skuId) {
         try {
-            getById(skuId);
-            return true;
+            Sku sku = getById(skuId);
+            return sku;
         } catch (RuntimeException e) {}
 
-        return false;
+        return null;
     }
 
     Sku getById(String skuId) {

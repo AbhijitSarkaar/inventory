@@ -39,7 +39,7 @@ public class InventoryController {
     }
 
     @GetMapping("/inventories/{skuId}")
-    public ResponseEntity<Boolean> find(
+    public ResponseEntity<Sku> find(
             @PathVariable("skuId") String skuId
     ) {
         return new ResponseEntity<>(

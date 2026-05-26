@@ -10,7 +10,7 @@ public interface InventoryService {
 
     CustomResponse reduceStock(String skuId, Integer quantity);
 
-    Boolean find(String skuId);
+    Sku find(String skuId);
 
     Sku checkAvailability(String skuId, Integer quantity);
 }

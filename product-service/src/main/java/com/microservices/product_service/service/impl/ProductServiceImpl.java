@@ -3,6 +3,7 @@ package com.microservices.product_service.service.impl;
 import com.microservices.product_service.client.InventoryClient;
 import com.microservices.product_service.exception.exceptions.ResourceNotFoundException;
 import com.microservices.product_service.exception.response.CustomResponse;
+import com.microservices.product_service.external.Sku;
 import com.microservices.product_service.model.Product;
 import com.microservices.product_service.payload.ProductDTO;
 import com.microservices.product_service.payload.ProductRequestDTO;
@@ -38,8 +39,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO createProduct(ProductRequestDTO productRequestDto) {
-        Boolean validSku = inventoryClient.find(productRequestDto.getProductSku());
-        if(!validSku) throw new RuntimeException("Invalid Sku provided");
+        Sku validSku = inventoryClient.find(productRequestDto.getProductSku());
+        if(validSku == null) throw new RuntimeException("Invalid Sku provided");
 
         Product product = new Product();
 

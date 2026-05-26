@@ -1,10 +1,7 @@
 
 package com.microservices.inventory_service.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -29,5 +26,9 @@ public class Sku {
     @Column(name = "quantity")
     @Min(0)
     private Integer quantity;
+
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
 }
 
