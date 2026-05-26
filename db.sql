@@ -86,3 +86,21 @@ create table order_items(
     references products(product_id)
     on delete cascade
 );
+
+
+// inventory service
+create table skus(
+	sku_id varchar(50) primary key,
+    quantity int not null
+);
+
+select * from skus;
+
+insert into skus(sku_id, quantity) values 
+	("qpqpqp111qpqpqpq", 5),
+    ("qpqpqp222qpqpqpq", 5),
+    ("qpqpqp333qpqpqpq", 5),
+    ("qpqpqp444qpqpqpq", 5),
+    ("qpqpqp555qpqpqpq", 5);
+
+

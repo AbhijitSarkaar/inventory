@@ -55,9 +55,11 @@ public class OrderServiceImpl implements OrderService {
 
         for(OrderItemDTO item: orderItemDtos) {
             Product product = productClient.details(item.getProductId());
+            log.info("product: {}", product);
             Sku sku = inventoryClient.availability(product.getProductSku(), item.getQuantity());
+            log.info("sku: {}", sku);
             if(sku.getSkuId() == null) {
-                throw new RuntimeException("Product with id " + product.getProductId() + " unavailable");
+                throw new RuntimeException("Error fetching sku data");
             } else {
                 map.put(product.getProductSku(), item.getQuantity());
             }
