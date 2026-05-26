@@ -24,12 +24,10 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/users/register",
-              "protocol": "http",
+              "raw": "{{user-service-host}}/api/users/register",
               "host": [
-                "localhost"
+                "{{user-service-host}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "users",
@@ -46,7 +44,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"username\": \"jason\",\n    \"password\": \"jason123\"\n}",
+              "raw": "{\n    \"username\": \"johndoe\",\n    \"password\": \"john123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -54,12 +52,12 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/users/login",
+              "raw": "http://localhost:9094/api/users/login",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "8080",
+              "port": "9094",
               "path": [
                 "api",
                 "users",
@@ -96,16 +94,49 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/users/details",
+              "raw": "http://localhost:8000/api/users/details",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "8080",
+              "port": "8000",
               "path": [
                 "api",
                 "users",
                 "details"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify token",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9094/api/auth/verify",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9094",
+              "path": [
+                "api",
+                "auth",
+                "verify"
               ]
             }
           },
@@ -155,7 +186,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"productName\": \"product7\",\n    \"productDescription\": \"product7 desc\",\n    \"productSku\": \"qpqpqp777qpqpqpq\",\n    \"price\": 150\n}",
+              "raw": "{\n    \"productName\": \"product 3\",\n    \"productDescription\": \"product 3 desc\",\n    \"productSku\": \"qpqpqp555qpqpqpq\",\n    \"price\": 50\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -181,10 +212,16 @@
           "name": "Update product",
           "request": {
             "method": "PUT",
-            "header": [],
+            "header": [
+              {
+                "key": "X-USER-ROLE",
+                "value": "ROLE_ADMIN",
+                "type": "text"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"productName\": \"pname3 updated\",\n    \"productDescription\": \"pdesc3\",\n    \"productSku\": \"ioqu4hou2h398h\",\n    \"price\": 267.22\n}",
+              "raw": "{\n    \"productName\": \"product\",\n    \"productDescription\": \"product desc\",\n    \"productSku\": \"qpqpqp555qpqpqpq\",\n    \"price\": 120\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -192,16 +229,16 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/products/3",
+              "raw": "http://localhost:8081/api/products/1",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "8080",
+              "port": "8081",
               "path": [
                 "api",
                 "products",
-                "3"
+                "1"
               ]
             }
           },
@@ -264,10 +301,16 @@
           "name": "Create order",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "X-USER-ID",
+                "value": "1",
+                "type": "text"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"orderItems\": [\n        {\n            \"quantity\": 5,\n            \"productId\": 2\n        }\n    ]\n}",
+              "raw": "{\n    \"orderItems\": [\n        {\n            \"quantity\": 2,\n            \"productId\": 1\n        }\n    ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -275,12 +318,12 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8082/api/orders",
+              "raw": "http://localhost:9092/api/orders",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "8082",
+              "port": "9092",
               "path": [
                 "api",
                 "orders"
@@ -359,7 +402,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8083/api/inventories/qpqpqp666qpqpqpq",
+              "raw": "http://localhost:8083/api/inventories/qpqpqp555qpqpqpq",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -368,7 +411,185 @@
               "path": [
                 "api",
                 "inventories",
-                "qpqpqp666qpqpqpq"
+                "qpqpqp555qpqpqpq"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "gateway",
+      "item": [
+        {
+          "name": "user details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/users/details",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "users",
+                "details"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "user login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"john\",\n    \"password\": \"john123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/users/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/products",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-USER-ROLE",
+                "value": "ROLE_ADMIN",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"productName\": \"product 4\",\n    \"productDescription\": \"product 4 desc\",\n    \"productSku\": \"qpqpqp444qpqpqpq\",\n    \"price\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/products",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-USER-ID",
+                "value": "1",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"orderItems\": [\n        {\n            \"quantity\": 1,\n            \"productId\": 4\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"john\",\n    \"password\": \"john123\",\n    \"email\": \"john@email.com\",\n    \"roles\": [\"user\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/users/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "users",
+                "register"
               ]
             }
           },
